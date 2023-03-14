@@ -1,3 +1,3 @@
 # blender-ipl-import-script
 
-Blender script for import GTA SA ipl file.  
+Blender script for GTA SA ipl files import.  
