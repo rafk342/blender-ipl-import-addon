@@ -15,7 +15,7 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
         print(self.filepath) 
  
         encoding = "cp1251" 
-        ipl_path = self.filepath #r"F:\gta sa models\arzamas_N.IPL" 
+        ipl_path = self.filepath
  
  
         ipl_objects = {} 
