@@ -5,7 +5,7 @@ from bpy_extras.io_utils import (
     ImportHelper 
 ) 
   
-print(" ===================================================== ")
+print("====" * 30)
 class CustomDrawOperator(bpy.types.Operator, ImportHelper): 
     bl_idname = "object.custom_draw" 
     bl_label = "Import" 
@@ -14,6 +14,7 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
   
     def execute(self, context): 
         print(self.filepath) 
+        print("\n\n")
  
         encoding = "cp1251" 
         ipl_path = self.filepath 
@@ -32,8 +33,6 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                         
                     ipl_objects[obj_name]["coords_rot_list"].append((x, y, z, rotx, roty, rotz, rotw))
                     ipl_objects[obj_name]["check"] += 1
-        
-        print("\n\n")
         
         for obj_name, data in ipl_objects.items():
             obj = bpy.data.objects.get(obj_name)
@@ -67,7 +66,7 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                 obj.rotation_quaternion = (-(coords_rot[6]), coords_rot[3], coords_rot[4], coords_rot[5])
                 print(f"{obj_name} location: {obj.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
                 print("\n")
-                
+                          
         return {'FINISHED'} 
  
 bpy.utils.register_class(CustomDrawOperator) 
