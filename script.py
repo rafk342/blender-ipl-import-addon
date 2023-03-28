@@ -33,17 +33,12 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                     ipl_objects[obj_name]['coords_rot_list'].append((x, y, z, rotx, roty, rotz, rotw))
                     ipl_objects[obj_name]['check'] += 1
         
-        #for key, value in ipl_objects.items():
-         #   print(f"{key}:")
-          #  for v in value:
-           #     print(f"\t{v}")
-            #    print("\n")
         print("\n\n")
         
         for obj_name, data in ipl_objects.items():
             obj = bpy.data.objects.get(obj_name)
             if obj is None:
-                print(f"Object {obj_name} not found.")
+                #print(f" {obj_name} not found.")
                 continue
             
             coords_rot_list = data['coords_rot_list']
@@ -63,14 +58,14 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                     new_obj.rotation_quaternion = (-(coords_rot[6]), coords_rot[3], coords_rot[4], coords_rot[5])
                     new_obj.name = f"{obj_name}_{i}"
                     bpy.data.collections[collection_name].objects.link(new_obj)
-                    #print(f"{new_obj.name} location: {new_obj.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
+                    print(f"{new_obj.name} location: {new_obj.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
                     print("\n")
             else:
                 coords_rot = coords_rot_list[0]
                 obj.location = coords_rot[0:3] 
                 obj.rotation_mode = 'QUATERNION'
                 obj.rotation_quaternion = (-(coords_rot[6]), coords_rot[3], coords_rot[4], coords_rot[5])
-                #print(f"{obj_name} location: {obj.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
+                print(f"{obj_name} location: {obj.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
                 print("\n")
                 
         return {'FINISHED'} 
