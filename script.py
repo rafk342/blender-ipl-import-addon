@@ -5,6 +5,7 @@ from bpy_extras.io_utils import (
     ImportHelper 
 ) 
   
+print(" ===================================================== ")
 class CustomDrawOperator(bpy.types.Operator, ImportHelper): 
     bl_idname = "object.custom_draw" 
     bl_label = "Import" 
@@ -15,35 +16,56 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
         print(self.filepath) 
  
         encoding = "cp1251" 
-        ipl_path = self.filepath
- 
+        ipl_path = self.filepath 
  
         ipl_objects = {} 
+ 
  
         with open(ipl_path, "r", encoding=encoding) as f: 
             for line in f: 
  
                 elements = [elem.strip() for elem in line.split(",")] 
  
-#[0//'4000', 1//'road_tran_01', 2//'0', 3//x'-318.924', 4//y'971.001', 5//z'11.001', 6//rotx'0', 7//roty'0', 8//rotz'0.707108', 9//rotw'-0.707105', '1'] 
- 
-                #print("   ", elements) 
- 
-                if len(elements) >= 4 and elements[1] in bpy.data.objects.keys(): 
+                if len(elements) >= 4: 
+                    obj_name = elements[1]
                     x, y, z, rotx, roty, rotz, rotw = map(float, elements[3:10]) 
-                    ipl_objects[elements[1]] = (x, y, z, rotx, roty, rotz, rotw) 
- 
-        print(ipl_objects.items()) 
- 
-        for obj_name, coords_rot in ipl_objects.items(): 
-            if obj_name in bpy.data.objects: 
-                obj = bpy.data.objects[obj_name] 
-                obj.location = coords_rot[:3] 
-                obj.rotation_mode = 'QUATERNION' 
-                obj.rotation_quaternion = (coords_rot[6], coords_rot[3], coords_rot[4], coords_rot[5]) 
-            else: 
-                print(f"hui {obj_name}") 
- 
+                    if obj_name not in ipl_objects:
+                        ipl_objects[obj_name] = []
+                        
+                    ipl_objects[obj_name].append((x, y, z, rotx, roty, rotz, rotw)) 
+        
+        #for key, value in ipl_objects.items():
+         #   print(f"{key}:")
+          #  for v in value:
+           #     print(f"\t{v}")
+            #    print("\n")
+        print("\n\n")
+        
+        for obj_name, coords_rot_list in ipl_objects.items():
+            obj = bpy.data.objects.get(obj_name)
+            if obj is None:
+                print(f"Object {obj_name} not found.")
+                continue
+            
+            collection_name = obj_name + "_collection"
+            
+            if collection_name not in bpy.data.collections:
+                new_collection = bpy.data.collections.new(collection_name)
+                bpy.context.scene.collection.children.link(new_collection)
+            
+            for i, coords_rot in enumerate(coords_rot_list):
+                new_obj = obj.copy()
+                new_obj.data = obj.data.copy()
+                new_obj.animation_data_clear()
+                new_obj.location = coords_rot[0:3] 
+                new_obj.rotation_mode = 'QUATERNION'
+                new_obj.rotation_quaternion = (-(coords_rot[6]), coords_rot[3], coords_rot[4], coords_rot[5])
+                new_obj.name = f"{obj_name}_{i}"
+                bpy.data.collections[collection_name].objects.link(new_obj)
+                
+                print(f"{new_obj.name} location: {new_obj.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
+                print("\n")
+                
         return {'FINISHED'} 
  
 bpy.utils.register_class(CustomDrawOperator) 
