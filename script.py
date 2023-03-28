@@ -28,10 +28,10 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                     obj_name = elements[1]
                     x, y, z, rotx, roty, rotz, rotw = map(float, elements[3:10]) 
                     if obj_name not in ipl_objects:
-                        ipl_objects[obj_name] = {'coords_rot_list': [], 'check': 0}
+                        ipl_objects[obj_name] = {"coords_rot_list": [], "check": 0}
                         
-                    ipl_objects[obj_name]['coords_rot_list'].append((x, y, z, rotx, roty, rotz, rotw))
-                    ipl_objects[obj_name]['check'] += 1
+                    ipl_objects[obj_name]["coords_rot_list"].append((x, y, z, rotx, roty, rotz, rotw))
+                    ipl_objects[obj_name]["check"] += 1
         
         print("\n\n")
         
