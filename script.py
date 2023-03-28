@@ -25,7 +25,8 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
  
         ipl_objects = {} 
         
-        bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection
+        #selecting active collection to the root "scene collection" to avoid some problems with the instancing
+        bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection 
  
         with open(ipl_path, "r", encoding=encoding) as f: 
             for line in f: 
@@ -80,8 +81,8 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                 if collection_name not in bpy.data.collections:
                     scene = bpy.context.scene.collection
                     new_collection = bpy.data.collections.new(collection_name)
-                    
                     bpy.context.scene.collection.children.link(new_collection)
+                    
                 for i, coords_rot in enumerate(coords_rot_list):
                     bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(0.0, 0.0, 0.0), scale=(1, 1, 1))                   
                     obj_inst = bpy.context.object
