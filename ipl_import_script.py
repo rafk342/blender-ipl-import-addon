@@ -73,7 +73,7 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                 obj.rotation_mode = 'QUATERNION'
                 obj.rotation_quaternion = (-(coords_rot[6]), coords_rot[3], coords_rot[4], coords_rot[5])
                 
-                print(f"{obj_name} location: {obj.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
+                #print(f"{obj_name} location: {obj.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
                 #print("\n")
             else:
                 
