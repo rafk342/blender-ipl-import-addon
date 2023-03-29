@@ -13,7 +13,7 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
   
     filepath = bpy.props.StringProperty(subtype="FILE_PATH") 
     
-    instancing_check1 : bpy.props.BoolProperty(name = 'Import as instancing', description = 'Description', default = False, attr = {'size': 100})
+    instancing_check1 : bpy.props.BoolProperty(name = 'Import as instancing', description = 'Description', default = False)
 
     def execute(self, context): 
         instancing_check = not (self.instancing_check1)
@@ -25,6 +25,7 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
  
         ipl_objects = {} 
         
+        #selecting active collection to the root "scene collection" to avoid some problems with the instancing
         bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection
  
         with open(ipl_path, "r", encoding=encoding) as f: 
@@ -51,6 +52,7 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
             if check > 1 and instancing_check == True:
                 collection_name = obj_name + "_collection"
                 if collection_name not in bpy.data.collections:
+                    
                     new_collection = bpy.data.collections.new(collection_name)
                     bpy.context.scene.collection.children.link(new_collection)
                     
@@ -60,7 +62,7 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                     new_obj.location = coords_rot[0:3] 
                     new_obj.rotation_mode = 'QUATERNION'
                     new_obj.rotation_quaternion = (-(coords_rot[6]), coords_rot[3], coords_rot[4], coords_rot[5])
-                    new_obj.name = f"{obj_name}"
+                    new_obj.name = f"{obj_name}.0{i}"
                     bpy.data.collections[collection_name].objects.link(new_obj)
                     
                     #print(f"{new_obj.name} location: {new_obj.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
@@ -78,14 +80,14 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                 collection_name = obj_name + "_collection_inst"
                 
                 if collection_name not in bpy.data.collections:
-                    scene = bpy.context.scene.collection
+                    
                     new_collection = bpy.data.collections.new(collection_name)
                     bpy.context.scene.collection.children.link(new_collection)
                     
                 for i, coords_rot in enumerate(coords_rot_list):
                     bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(0.0, 0.0, 0.0), scale=(1, 1, 1))                   
                     obj_inst = bpy.context.object
-                    obj_inst.name = f"{obj_name}"
+                    obj_inst.name = f"{obj_name}.0{i}"
                     obj_inst.rotation_mode = 'QUATERNION'
                     obj_inst.rotation_quaternion = (-(coords_rot[6]), coords_rot[3], coords_rot[4], coords_rot[5])
                     obj_inst.location = coords_rot[0:3] 
@@ -95,7 +97,7 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                     
                     #print(f"{obj_inst.name} location: {obj_inst.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
                     #print("\n")
-        
+                    
         print ("Done \n")
 
         return {'FINISHED'} 
