@@ -6,6 +6,7 @@ selected_objects = bpy.context.selected_objects
 
 for obj in selected_objects:
     
+    obj.rotation_mode = 'QUATERNION'
     coord = obj.location
     rot = obj.rotation_quaternion
     
