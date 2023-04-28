@@ -11,10 +11,10 @@ for obj in selected_objects:
     rot = obj.rotation_quaternion
     
     if "." in obj.name:
-        string= obj.name.split(".")[0]
+        str_name = obj.name.split(".")[0]
         
     else:
-        string = obj.name        
+        str_name = obj.name        
     
     rot_x = 0 if rot.x == 0.0 else f"{rot.x:.3f}"
     rot_y = 0 if rot.y == 0.0 else f"{rot.y:.3f}"
