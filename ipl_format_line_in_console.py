@@ -22,6 +22,6 @@ for obj in selected_objects:
     rot_w = 0 if rot.w == 0.0 else f"{-rot.w:.3f}"
         
         
-    print(f"0000, {string}, 0, {coord.x:.3f}, {coord.y:.3f}, {coord.z:.3f}, {rot_x}, {rot_y}, {rot_z}, {rot_w}, -1")
+    print(f"0000, {str_name}, 0, {coord.x:.3f}, {coord.y:.3f}, {coord.z:.3f}, {rot_x}, {rot_y}, {rot_z}, {rot_w}, -1")
 
 print("\n\n")
