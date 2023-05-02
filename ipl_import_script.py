@@ -30,24 +30,41 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
  
         with open(ipl_path, "r", encoding=encoding) as f: 
             for line in f: 
+                if line.strip() == "end":
+                    break
+                
                 elements = [elem.strip() for elem in line.split(",")] 
-                if len(elements) >= 4: 
+                
+                if len(elements) == 11: 
+                    
                     obj_name = elements[1]
+                    model_id = int(elements[0])
+                    
+                    #print(f"{model_id} = {obj_name}")
+                    
                     x, y, z, rotx, roty, rotz, rotw = map(float, elements[3:10]) 
+                    
                     if obj_name not in ipl_objects:
                         ipl_objects[obj_name] = {"coords_rot_list": [], "check": 0}
-                     
-                    ipl_objects[obj_name]["coords_rot_list"].append((x, y, z, rotx, roty, rotz, rotw))
+                    
+                    ipl_objects[obj_name]["coords_rot_list"].append((x, y, z, rotx, roty, rotz, rotw, model_id))
                     ipl_objects[obj_name]["check"] += 1
         
         for obj_name, data in ipl_objects.items():
             obj = bpy.data.objects.get(obj_name)
+            
             if obj is None:
                 #print(f" {obj_name} not found.")
                 continue
             
             coords_rot_list = data['coords_rot_list']
             check = data['check']
+            
+            
+            #print(coords_rot_list)
+            
+            bpy.data.objects[obj_name]['model id'] = coords_rot_list[0][7]
+            
             
             if check > 1 and instancing_check == True:
                 collection_name = obj_name + "_collection"
@@ -57,6 +74,7 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                     bpy.context.scene.collection.children.link(new_collection)
                     
                 for i, coords_rot in enumerate(coords_rot_list):
+                    
                     new_obj = obj.copy()
                     new_obj.data = obj.data.copy()
                     new_obj.location = coords_rot[0:3] 
