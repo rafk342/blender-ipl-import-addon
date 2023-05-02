@@ -2,4 +2,5 @@
 
 Blender addon for GTA SA ipl files import.  
 
-![image](https://user-images.githubusercontent.com/97851724/235796541-b08d5de5-8f5f-46a7-b11b-aa8190b9d6fc.png)
+
+![image](https://user-images.githubusercontent.com/97851724/235796621-7e7cdcbc-5a49-4d0c-8721-2cb038f6fa10.png)
