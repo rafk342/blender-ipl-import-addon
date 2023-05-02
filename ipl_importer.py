@@ -1,23 +1,29 @@
-import bpy 
-import struct 
- 
-from bpy_extras.io_utils import ( 
-    ImportHelper 
-) 
-  
+import bpy
+from bpy_extras.io_utils import ImportHelper
+
+
 print("====" * 30)
 
-class CustomDrawOperator(bpy.types.Operator, ImportHelper): 
+
+def menu_func_import(self, context):
+    self.layout.operator(import_ipl_file.bl_idname, text = 'IPL Import')
+
+
+class import_ipl_file(bpy.types.Operator, ImportHelper): 
     bl_idname = "object.custom_draw" 
     bl_label = "Import" 
   
-    filepath = bpy.props.StringProperty(subtype="FILE_PATH") 
+    
+    filepath = bpy.props.StringProperty(subtype = "FILE_PATH") 
     
     instancing_check1 : bpy.props.BoolProperty(name = 'Import as instancing', description = 'Description', default = False)
 
+
     def execute(self, context): 
         instancing_check = not (self.instancing_check1)
+        
         print(self.filepath) 
+        
         print("\n\n")
 
         encoding = "cp1251" 
@@ -40,8 +46,6 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                     obj_name = elements[1]
                     model_id = int(elements[0])
                     
-                    #print(f"{model_id} = {obj_name}")
-                    
                     x, y, z, rotx, roty, rotz, rotw = map(float, elements[3:10]) 
                     
                     if obj_name not in ipl_objects:
@@ -52,22 +56,26 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
         
         for obj_name, data in ipl_objects.items():
             obj = bpy.data.objects.get(obj_name)
-            
+        
             if obj is None:
                 #print(f" {obj_name} not found.")
                 continue
             
+            obj_location = bpy.data.objects[obj_name].location
+            
+            if obj_location != [0.0, 0.0, 0.0]:
+                obj.location = (0.0, 0.0, 0.0)
+            
             coords_rot_list = data['coords_rot_list']
             check = data['check']
             
-            
-            #print(coords_rot_list)
-            
-            bpy.data.objects[obj_name]['model id'] = coords_rot_list[0][7]
+            bpy.data.objects[obj_name]['id'] = coords_rot_list[0][7]
             
             
             if check > 1 and instancing_check == True:
+               
                 collection_name = obj_name + "_collection"
+             
                 if collection_name not in bpy.data.collections:
                     
                     new_collection = bpy.data.collections.new(collection_name)
@@ -85,7 +93,9 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                     
                     #print(f"{new_obj.name} location: {new_obj.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
                     #print("\n")
+                    
             elif check == 1:
+               
                 coords_rot = coords_rot_list[0]
                 obj.location = coords_rot[0:3] 
                 obj.rotation_mode = 'QUATERNION'
@@ -103,6 +113,7 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                     bpy.context.scene.collection.children.link(new_collection)
                     
                 for i, coords_rot in enumerate(coords_rot_list):
+                   
                     bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(0.0, 0.0, 0.0), scale=(1, 1, 1))                   
                     obj_inst = bpy.context.object
                     obj_inst.name = f"{obj_name}.0{i}"
@@ -116,13 +127,6 @@ class CustomDrawOperator(bpy.types.Operator, ImportHelper):
                     #print(f"{obj_inst.name} location: {obj_inst.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
                     #print("\n")
                     
-        print ("Done \n")
+        print ("Import magic happend!\n")
 
         return {'FINISHED'} 
- 
-bpy.utils.register_class(CustomDrawOperator) 
- 
-# test call 
-bpy.ops.object.custom_draw('INVOKE_DEFAULT') 
- 
-#bpy.utils.unregister_class(CustomDrawOperator)
