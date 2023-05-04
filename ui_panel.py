@@ -34,7 +34,7 @@ class ipl_panel(bpy.types.Panel):
         
         row = layout.row(align=True)
         row.scale_y = 1.05
-        row.operator("object.set_object_id", text = "set object id")
+        row.operator("object.set_object_id", text = "Set object ID to selected")
         row.prop(context.scene, "object_id", text="")
 
         row = layout.row()
