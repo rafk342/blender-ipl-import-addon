@@ -20,7 +20,7 @@ class print_selected_objects_operator(bpy.types.Operator):
                 object_name = obj.name.split(".")[0]
 
             else:
-                object_name = obj.name        
+                object_name = obj.name
 
             obj_id = bpy.data.objects[obj.name_full].get('id', None)
 
