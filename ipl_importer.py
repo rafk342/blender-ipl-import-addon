@@ -5,6 +5,8 @@ from bpy_extras.io_utils import ImportHelper
 print("====" * 30)
 
 
+
+
 def menu_func_import(self, context):
     self.layout.operator(import_ipl_file.bl_idname, text = 'IPL Import')
 
@@ -17,7 +19,7 @@ class import_ipl_file(bpy.types.Operator, ImportHelper):
     filepath = bpy.props.StringProperty(subtype = "FILE_PATH") 
     
     instancing_check1 : bpy.props.BoolProperty(name = 'Import as instancing', description = 'Description', default = False)
-
+    filter_glob : bpy.props.StringProperty(default='*.ipl', options={'HIDDEN'})
 
     def execute(self, context): 
         instancing_check = not (self.instancing_check1)
@@ -58,7 +60,7 @@ class import_ipl_file(bpy.types.Operator, ImportHelper):
             obj = bpy.data.objects.get(obj_name)
         
             if obj is None:
-                #print(f" {obj_name} not found.")
+                #print(f" {obj_name} not found in the scene.")
                 continue
             
             obj_location = bpy.data.objects[obj_name].location
@@ -69,7 +71,7 @@ class import_ipl_file(bpy.types.Operator, ImportHelper):
             coords_rot_list = data['coords_rot_list']
             check = data['check']
             
-            bpy.data.objects[obj_name]['id'] = coords_rot_list[0][7]
+            bpy.data.objects[obj_name]['id'] = coords_rot_list[0][7]     #model id
             
             
             if check > 1 and instancing_check == True:
@@ -81,18 +83,34 @@ class import_ipl_file(bpy.types.Operator, ImportHelper):
                     new_collection = bpy.data.collections.new(collection_name)
                     bpy.context.scene.collection.children.link(new_collection)
                     
-                for i, coords_rot in enumerate(coords_rot_list):
+                for i, coords_rot in enumerate(coords_rot_list): 
                     
-                    new_obj = obj.copy()
-                    new_obj.data = obj.data.copy()
-                    new_obj.location = coords_rot[0:3] 
-                    new_obj.rotation_mode = 'QUATERNION'
-                    new_obj.rotation_quaternion = (-(coords_rot[6]), coords_rot[3], coords_rot[4], coords_rot[5])
-                    new_obj.name = f"{obj_name}.0{i}"
-                    bpy.data.collections[collection_name].objects.link(new_obj)
+                    existing_obj = None         #this piece of code is used to avoid copying when re-importing the file
+                    for o in bpy.data.objects:
+
+                        obj_name_check = o.name
+                        obj_coord_check = [float(f"{coord:.1f}") for coord in (o.location)]
+                        coords_list_check = [float(f"{coord:.1f}") for coord in coords_rot[0:3]]
+
+                        if "." in o.name:
+                            obj_name_check = o.name.split(".")[0]
+
+                        if obj_name_check == obj_name and obj_coord_check == coords_list_check:
+                            existing_obj = o
+                            #print("match found")
                     
-                    #print(f"{new_obj.name} location: {new_obj.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
-                    #print("\n")
+                    if existing_obj is None:
+                        
+                        new_obj = obj.copy()
+                        new_obj.data = obj.data.copy()
+                        new_obj.location = coords_rot[0:3] 
+                        new_obj.rotation_mode = 'QUATERNION'
+                        new_obj.rotation_quaternion = (-(coords_rot[6]), coords_rot[3], coords_rot[4], coords_rot[5])
+                        new_obj.name = f"{obj_name}.0{i}"
+                        bpy.data.collections[collection_name].objects.link(new_obj)
+                    
+                        #print(f"{new_obj.name} location: {new_obj.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
+                        #print("\n")
                     
             elif check == 1:
                
@@ -113,19 +131,34 @@ class import_ipl_file(bpy.types.Operator, ImportHelper):
                     bpy.context.scene.collection.children.link(new_collection)
                     
                 for i, coords_rot in enumerate(coords_rot_list):
-                   
-                    bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(0.0, 0.0, 0.0), scale=(1, 1, 1))                   
-                    obj_inst = bpy.context.object
-                    obj_inst.name = f"{obj_name}.0{i}"
-                    obj_inst.rotation_mode = 'QUATERNION'
-                    obj_inst.rotation_quaternion = (-(coords_rot[6]), coords_rot[3], coords_rot[4], coords_rot[5])
-                    obj_inst.location = coords_rot[0:3] 
-                    bpy.data.collections[collection_name].objects.link(obj_inst)
-                    obj_inst.instance_type = 'COLLECTION'
-                    obj_inst.instance_collection = bpy.data.collections[obj_name + ".dff"]
                     
-                    #print(f"{obj_inst.name} location: {obj_inst.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
-                    #print("\n")
+                    existing_obj = None
+                    for o in bpy.data.objects:
+
+                        obj_name_check = o.name
+                        obj_coord_check = [float(f"{coord:.1f}") for coord in (o.location)]
+                        coords_list_check = [float(f"{coord:.1f}") for coord in coords_rot[0:3]]
+
+                        if "." in o.name:
+                            obj_name_check = o.name.split(".")[0]
+
+                        if obj_name_check == obj_name and obj_coord_check == coords_list_check:
+                            existing_obj = o
+
+                    if existing_obj is None:
+
+                        bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(0.0, 0.0, 0.0), scale=(1, 1, 1))                   
+                        obj_inst = bpy.context.object
+                        obj_inst.name = f"{obj_name}.0{i}"
+                        obj_inst.rotation_mode = 'QUATERNION'
+                        obj_inst.rotation_quaternion = (-(coords_rot[6]), coords_rot[3], coords_rot[4], coords_rot[5])
+                        obj_inst.location = coords_rot[0:3] 
+                        bpy.data.collections[collection_name].objects.link(obj_inst)
+                        obj_inst.instance_type = 'COLLECTION'
+                        obj_inst.instance_collection = bpy.data.collections[obj_name + ".dff"]
+                    
+                        #print(f"{obj_inst.name} location: {obj_inst.location} rotation: (x = {coords_rot[3]}, y = {coords_rot[4]}, z = {coords_rot[5]}, w = {coords_rot[6]})")
+                        #print("\n")
                     
         print ("Import magic happend!\n")
 
