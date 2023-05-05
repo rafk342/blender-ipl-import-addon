@@ -4,6 +4,9 @@ from bpy_extras.io_utils import ImportHelper
 
 print("====" * 30)
 
+
+
+
 def menu_func_import(self, context):
     self.layout.operator(import_ipl_file.bl_idname, text = 'IPL Import')
 
@@ -82,8 +85,8 @@ class import_ipl_file(bpy.types.Operator, ImportHelper):
                     
                 for i, coords_rot in enumerate(coords_rot_list): 
                     
-                    existing_obj = None         #this piece of code is used to avoid copying when re-importing the file
-                    for o in bpy.data.objects:
+                    existing_obj = None             #   if an object with the coords from ipl already 
+                    for o in bpy.data.objects:      #   exist in the scene - it won't be copied
 
                         obj_name_check = o.name
                         obj_coord_check = [float(f"{coord:.1f}") for coord in (o.location)]
