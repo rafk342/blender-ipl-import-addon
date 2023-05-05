@@ -4,9 +4,6 @@ from bpy_extras.io_utils import ImportHelper
 
 print("====" * 30)
 
-
-
-
 def menu_func_import(self, context):
     self.layout.operator(import_ipl_file.bl_idname, text = 'IPL Import')
 
