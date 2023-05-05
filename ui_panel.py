@@ -14,7 +14,7 @@ class set_object_id(bpy.types.Operator):
         for obj in selected_objects:
             if obj.type == "EMPTY":
                 bpy.data.objects[obj.name_full.split(".")[0]]['id'] = object_id
-            else:
+            if obj.type == "MESH":
                 bpy.data.objects[obj.name_full]['id'] = object_id
             
         return {'FINISHED'}
