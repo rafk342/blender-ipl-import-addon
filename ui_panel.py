@@ -12,10 +12,21 @@ class set_object_id(bpy.types.Operator):
         object_id = context.scene.object_id
 
         for obj in selected_objects:
+           
             if obj.type == "EMPTY":
                 bpy.data.objects[obj.name_full.split(".")[0]]['id'] = object_id
+            
             if obj.type == "MESH":
-                bpy.data.objects[obj.name_full]['id'] = object_id
+                if "." in obj.name_full:
+                    _object_name = obj.name_full.split(".")[0]
+                    
+                    for _object_check in bpy.data.objects:
+                        _object_check_name = _object_check.name_full.split(".")[0]
+                    
+                        if _object_check_name == _object_name:
+                            bpy.data.objects[_object_check.name_full]['id'] = object_id
+                else:
+                    bpy.data.objects[obj.name_full]['id'] = object_id
             
         return {'FINISHED'}
 
@@ -29,6 +40,9 @@ class show_console(bpy.types.Operator):
         bpy.ops.wm.console_toggle()
             
         return {'FINISHED'}
+
+    
+
 
 class ipl_panel(bpy.types.Panel):
     
