@@ -16,17 +16,25 @@ class set_object_id(bpy.types.Operator):
             if obj.type == "EMPTY":
                 bpy.data.objects[obj.name_full.split(".")[0]]['id'] = object_id
             
-            if obj.type == "MESH":
+            elif obj.type == "MESH":
+               
+                bpy.data.objects[obj.name_full]['id'] = object_id
+                
                 if "." in obj.name_full:
                     _object_name = obj.name_full.split(".")[0]
-                    
-                    for _object_check in bpy.data.objects:
-                        _object_check_name = _object_check.name_full.split(".")[0]
-                    
-                        if _object_check_name == _object_name:
-                            bpy.data.objects[_object_check.name_full]['id'] = object_id
                 else:
-                    bpy.data.objects[obj.name_full]['id'] = object_id
+                    _object_name = obj.name_full
+
+                for _object_check in bpy.data.objects:
+
+                    if "." in _object_check.name_full:
+                        _object_check_name = _object_check.name_full.split(".")[0]
+                    else:
+                        _object_check_name = _object_check.name_full
+                    
+                    if _object_check_name == _object_name:
+                        bpy.data.objects[_object_check.name_full]['id'] = object_id
+               
             
         return {'FINISHED'}
 
