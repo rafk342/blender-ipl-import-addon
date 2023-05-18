@@ -71,7 +71,7 @@ class import_ipl_file(bpy.types.Operator, ImportHelper):
             coords_rot_list = data['coords_rot_list']
             check = data['check']
             
-            bpy.data.objects[obj_name]['id'] = coords_rot_list[0][7]     #model id
+            bpy.data.objects[obj_name]['id'] = coords_rot_list[0][7]     #obj id
             
             
             if check > 1 and instancing_check == True:
