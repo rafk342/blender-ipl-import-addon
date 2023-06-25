@@ -38,9 +38,12 @@ class import_ipl_file(bpy.types.Operator, ImportHelper):
  
         with open(ipl_path, "r", encoding=encoding) as f: 
             for line in f: 
-                if line.strip() == "end":
+                if "end" in line:
                     break
-                
+                if "#" in line:
+                    continue
+
+
                 elements = [elem.strip() for elem in line.split(",")] 
                 
                 if len(elements) == 11: 
